@@ -30,8 +30,8 @@ def createNewSocket(hostname, socket_port):
     return s
 
 
-# Method to handle EchoServer connection
-def handleEchoServer(echosocket, relayhost, relayport):
+# Method to handle Server connection
+def handleServer(server_sock, relayhost, relayport):
 
     # Set params for tunnel host and port
     tunnelhost = relayhost
@@ -42,7 +42,7 @@ def handleEchoServer(echosocket, relayhost, relayport):
 
     # Form message and send back to the echoserver
     tunnel_msg = tunnelhost + ":" + str(tunnelport)
-    echosocket.send(tunnel_msg)
+    server_sock.send(tunnel_msg)
 
     # Accept connection
     tunnelclient, tunnelclientaddr = tunnelsocket.accept()
@@ -54,12 +54,12 @@ def handleEchoServer(echosocket, relayhost, relayport):
             tunnelclientdata = tunnelclient.recv(NET_MSG_SIZE)
             if tunnelclientdata:
 	        # Forward data to echo server
-                echosocket.send(tunnelclientdata)
+                server_sock.send(tunnelclientdata)
 	        # Receive replay back from echo server
-                echoserverdata = echosocket.recv(NET_MSG_SIZE)
-                if echoserverdata:
+                serverdata = server_sock.recv(NET_MSG_SIZE)
+                if serverdata:
 	            # Forward reply back to tunnel client
-                    tunnelclient.send(echoserverdata)
+                    tunnelclient.send(serverdata)
                 else:
                     running = 0
             else:
@@ -68,7 +68,7 @@ def handleEchoServer(echosocket, relayhost, relayport):
         running = 0
 
     tunnelsocket.close()
-    echosocket.close()
+    server_sock.close()
 
 # Method to create a new relay server
 def createRelayServer(relayhost, relayport):
@@ -78,9 +78,9 @@ def createRelayServer(relayhost, relayport):
     try:
         while running:
             # Accept connection
-            echosocket, echoaddr = relaysocket.accept()
+            new_socket, addr = relaysocket.accept()
 	    # Spawn a new thread for connection
-            thread.start_new_thread(handleEchoServer, (echosocket, relayhost, relayport))
+            thread.start_new_thread(handleServer, (new_socket, relayhost, relayport))
     except KeyboardInterrupt:
         print "Terminating Server"
         running = 0
