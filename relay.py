@@ -25,7 +25,7 @@ def createNewSocket(hostname, socket_port):
     except socket.error, (value, message):
         if s:
             s.close()
-            print "Could not open socket: " + message + " " + value
+            print "Could not open socket: " + message
             sys.exit(1)
     return s
 
@@ -75,7 +75,6 @@ def createRelayServer(relayhost, relayport):
     relaysocket = createNewSocket(relayhost, relayport)
 
     running = 1
-    print NET_MSG_SIZE
     try:
         while running:
             # Accept connection
@@ -104,7 +103,6 @@ if __name__ == '__main__':
         if sys.argv[2].isdigit():
             NET_MSG_SIZE = int(sys.argv[2])
             if not NET_MSG_SIZE:
-                print "here"
                 usage()
         else:
             print "Message size not int"
