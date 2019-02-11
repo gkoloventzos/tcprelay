@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     port = int(sys.argv[1])
     if total == 3:
-        if isinstance(sys.argv[2], int):
+        if sys.argv[2].isdigit():
             NET_MSG_SIZE = int(sys.argv[2])
             if not NET_MSG_SIZE:
                 print "here"
